@@ -1,0 +1,22 @@
+{
+  "name": "@bolt/db",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./client": "./index.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "pg": "^8.16.3",
+    "prisma": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.16.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {}
+}
