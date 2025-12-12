@@ -14,29 +14,53 @@ datasource db {
 }
 
 
-model Users{
-  id String @id @default(uuid())
-  email String @unique
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 }
 
-model Project{
-  id String @id @default(uuid())
+model Project {
+  id          String   @id @default(uuid())
   description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  prompt Prompt[]
-  userId String
-
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  prompt      Prompt[]
+  actions     Action[]
+  type        ProjectType @default(NEXTJS)
+  userId      String
 }
 
-model Prompt{
-  id String @id @default(uuid())
-  content String
+enum ProjectType {
+  REACT_NATIVE
+  NEXTJS
+  REACT
+}
+
+model Prompt {
+  id        String   @id @default(uuid())
+  content   String
+  type      PromptType
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project Project @relation(fields: [projectId],references: [id])
-  projectId String 
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  actions    Action[]
+}
+
+model Action {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id])
+  content   String
+  promptId  String
+  projectId String
+  prompt    Prompt   @relation(fields: [promptId], references: [id])
+}
+
+enum PromptType {
+  USER
+  SYSTEM
 }
