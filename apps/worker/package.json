@@ -1,0 +1,20 @@
+{
+  "name": "worker",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.38.0",
+    "@google/genai": "^1.33.0",
+    "@types/express": "^5.0.0",
+    "common": "*",
+    "cors": "^2.8.5",
+    "db": "*",
+    "express": "^4.21.2"
+  }
+}
