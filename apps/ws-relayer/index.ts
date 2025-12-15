@@ -8,6 +8,7 @@ const API_SUBSCRIPTIONS: ServerWebSocket<unknown>[] = []
 
 let bufferedMessages: any[] = []
 
+
 Bun.serve({
     fetch(req, server) {
       // upgrade the request to a WebSocket

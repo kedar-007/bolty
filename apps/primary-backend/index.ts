@@ -1,56 +1,80 @@
 import { prisma } from "@bolt/db";
 import express from "express";
 import cors from "cors";
-import { authMiddleware } from './middleware';
-
+import { authMiddleware } from "./middleware";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.post("/project",authMiddleware,async (req, res) => {
-    // console.log("Enterd in to the project creation route")
+/**
+ * CREATE PROJECT
+ */
+app.post("/project", authMiddleware, async (req, res) => {
     try {
         const { prompt } = req.body;
         const userId = req.userId!;
-        console.log("Clerk userid",userId);
-        // add logic to get a usefull name for the project from the prompt
 
         const description = prompt.split("\n")[0];
-        console.log("Above the route")
+
         const project = await prisma.project.create({
             data: {
                 description,
-                userId
+                userId,
             },
         });
 
-        console.log("Project Created",project);
-
-        res.json({projectId:project.id});
+        // ✅ return full project
+        res.status(201).json({ project });
 
     } catch (error) {
-        res.json(error)
+        console.error(error);
+        res.status(500).json({ error: "Failed to create project" });
     }
-})
+});
 
-
-app.get("/projects",authMiddleware,async (req,res) =>{
+/**
+ * GET ALL PROJECTS FOR USER
+ */
+app.get("/projects", authMiddleware, async (req, res) => {
     try {
         const userId = req.userId!;
-        const projects = await prisma.project.findFirst({
-            where:{
-                userId
-            }
-        })
-        // console.log("Projects",projects);
-        res.json(projects)
-    } catch (error) {
-        res.json(error)
-    }
-})
 
-app.listen(process.env.PORT || 9090,()=>{
-    console.log(`Server is running on port ${process.env.PORT || 9090}`)
-})
+        const projects = await prisma.project.findMany({
+            where: { userId },
+            orderBy: { createdAt: "desc" },
+        });
+
+        // ✅ always an array
+        res.json({ projects });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch projects" });
+    }
+});
+
+/**
+ * GET PROMPTS FOR PROJECT
+ */
+app.get("/prompts/:projectId", authMiddleware, async (req, res) => {
+    try {
+        const projectId = req.params.projectId;
+
+        const prompts = await prisma.prompt.findMany({
+            where: { projectId },
+            include: { actions: true },
+        });
+
+        res.json({ prompts });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch prompts" });
+    }
+});
+
+app.listen(process.env.PORT || 9090, () => {
+    console.log(`Server running on port ${process.env.PORT || 9090}`);
+});
